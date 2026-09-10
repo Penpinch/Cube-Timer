@@ -2,9 +2,13 @@
 # include <string>
 # include <chrono>
 
-Solve::Solve(std::string scramble, double raw_time): scramble(scramble), raw_time(raw_time){}
+Solve::Solve(){}
 
 void Solve::setID(int ID){ this->ID = ID; }
+
+void Solve::setScramble(std::string scramble){ this->scramble = scramble; }
+
+void Solve::setRawTime(double raw_time){ this->raw_time = raw_time; }
 
 void Solve::setPenalty(Penalities penalty){ this->penalty = penalty; }
 
@@ -31,8 +35,7 @@ void Solve::calculateDate(){
 }
 
 void Solve::calculateFinalTime(){
-    if(static_cast<Penalities>(penalty) == Penalities::NORMAL){ return; }
-
-    if(static_cast<Penalities>(penalty) == Penalities::PLUSTWO){ final_time = raw_time + 2; }
+    if(penalty == Penalities::NORMAL){ final_time = raw_time; }
+    else if(penalty == Penalities::PLUSTWO){ final_time = raw_time + 2; }
     else { final_time = -1.0; }
 }

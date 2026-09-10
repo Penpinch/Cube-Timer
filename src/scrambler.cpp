@@ -1,13 +1,12 @@
 # include "../headers/scrambler.hpp"
-using namespace std;
 
 Scramble::Scramble() : rd(), gen(rd()){}
 
-string Scramble::generate3x3Scramble(){ 
-    uniform_int_distribution<> distrib(0, 5);
-    uniform_int_distribution<> dist(0, 2);
+std::string Scramble::generate3x3Scramble(){ 
+    std::uniform_int_distribution<> distrib(0, 5);
+    std::uniform_int_distribution<> dist(0, 2);
 
-    string scmbr = "";
+    std::string scmbr = "";
     int last_num = -1;
 
     for(int i = 0; i < max_moves_per_scramble; i++){

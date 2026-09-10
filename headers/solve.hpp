@@ -3,7 +3,7 @@
 
 # include <string>
 
-enum class Penalities{
+enum class Penalities {
     NORMAL = 0,
     DNF = 1,
     PLUSTWO = 2
@@ -17,10 +17,12 @@ class Solve {
         Penalities penalty;
         std::string date;
     public:
-        Solve(std::string scramble, double raw_time);
+        Solve();
 
         // Setters.
         void setID(int ID);
+        void setScramble(std::string);
+        void setRawTime(double raw_time);
         void setPenalty(Penalities penalty);
 
         // Getters.
