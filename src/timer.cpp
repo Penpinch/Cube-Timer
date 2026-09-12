@@ -11,3 +11,9 @@ void Timer::stopTimer(){
 }
 
 double Timer::getTime() const{ return time; }
+
+double Timer::getElapsedTime() const{
+    auto now = std::chrono::steady_clock::now();
+
+    return std::chrono::duration<double>(now - start_time).count();
+}

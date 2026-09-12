@@ -12,6 +12,7 @@ class Timer {
         void runTimer();
         void stopTimer();
         double getTime() const;
+        double getElapsedTime() const;
 };
 
 # endif
