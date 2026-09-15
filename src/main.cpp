@@ -6,7 +6,7 @@
 # include "../headers/session.hpp"
 
 # include <limits>
-#include <string>
+# include <string>
 # include <unistd.h>
 # include <termios.h>
 # include <fcntl.h>
@@ -44,6 +44,8 @@ std::string formatTime(double seconds){
     return oss.str();
 }
 
+void clearScreen(){ std::cout << "\033[2J\033[1;1H"; }
+
 int main(){
     Session session;
     Scramble scramble;
@@ -51,30 +53,80 @@ int main(){
     Timer inspection;
     std::string scblr = "";
 
-    int option = 1;
-    while(option != 2){
-        std::cout << "--- OPTIONS ---" << std::endl;
-        std::cout <<"1. Make a solve." << std::endl;
-        std::cout <<"2. Exit." << std::endl;
-        std::cout << "Option: "; std::cin >> option;
+    int option = 0;
+    while(option != 3){
+        clearScreen();
+        std::cout << "|-------------------------|" << std::endl
+                  << "|         OPTIONS         |" << std::endl
+                  << "|-------------------------|" << std::endl
+                  << "| Make a solve.........(1)|" << std::endl
+                  << "| Show solves..........(2)|" << std::endl
+                  << "| Exit.................(3)|" << std::endl
+                  << "|-------------------------|" << std::endl;
+        std::cout << "- Option: "; std::cin >> option;
 
-        if(option == 2){ break; }
+        clearScreen();
+
+        if(option == 3){ break; }
+        else if(option < 1 || option > 3){
+            std::cout << "|-------------------------------------------------|" << std::endl
+                      << "| There's not such option. Press ENTER to continue. |" << std::endl
+                      << "|------------------------------------------|" << std::endl;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.get();
+            continue;
+        }
+        else if(option == 2){
+            if(session.getSolvesAmount() == 0){
+                std::cout << "|-------------------------------------------------|" << std::endl
+                          << "| There's no solves yet. Press ENTER to continue. |" << std::endl
+                          << "|-------------------------------------------------|" << std::endl;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cin.get();
+                continue;
+            }
+
+            std::cout << std::endl << "ALL SOLVES" << std::endl;
+            for(int i = 0; i < session.getSolvesAmount(); i++){
+                Solve obtained_from_sesion = session.getSolveInSession(i);
+
+                std::cout << "ID: " <<  obtained_from_sesion.getID() << std::endl
+                          << "Scramble: " << obtained_from_sesion.getScramble() << std::endl
+                          << "Time: " << obtained_from_sesion.getFinalTime() << std::endl
+                          << "Penality: " << obtained_from_sesion.getPenalty() << std::endl
+                          << "Date:" << obtained_from_sesion.getDate() << std::endl;
+                std::cout << std::endl;
+
+                std::cout << "|--------------------------|" << std::endl
+                          << "| Press ENTER to continue. |" << std::endl
+                          << "|--------------------------|" << std::endl;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cin.get();
+                continue;
+
+            }
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.get();
+            continue;
+        }
         Solve current_solve;
-
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
         scblr = scramble.generate3x3Scramble();
 
-        std::cout << scblr << std::endl;
-        std::cout << "--- Press ENTER to start the inspection ---";
-
+        std::cout << "|----------------------------------------|" << std::endl
+                  << "|   " << scblr << "    |" << std::endl
+                  << "|----------------------------------------|" << std::endl
+                  << "|  Press ENTER to start the inspection   |" << std::endl
+                  << "|----------------------------------------|" << std::endl;
+        
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cin.get();
         inspection.runTimer();
+        clearScreen();
 
         while(true){
             int elapsed = static_cast<int>(inspection.getElapsedTime());
 
-            std::cout << "\r" << elapsed << "s  " << std::flush;
+            std::cout << "\r| " << elapsed << " |" << std::flush;
 
             if(keyPressed()){
                 consumeKey();
@@ -92,12 +144,16 @@ int main(){
         }
 
         timer.runTimer();
-        std::cout << "   SOLVE!!!   " << std::endl;
+        clearScreen();
+
+        std::cout << "|--------------------------|" << std::endl
+                  << "|          SOLVE!!!        |" << std::endl
+                  << "|--------------------------|" << std::endl << std::endl;
 
         while(true){
             double elapsed = timer.getElapsedTime();
 
-            std::cout << "\r" << formatTime(elapsed) << "s  " << std::flush;
+            std::cout << "\r| " << formatTime(elapsed) << " |" << std::flush;
 
             if(keyPressed()){
                 consumeKey();
@@ -116,18 +172,6 @@ int main(){
         current_solve.calculateDate();
 
         session.addSolve(current_solve);
-    }
-
-    std::cout << std::endl << "SHOW ALL SOLVES" << std::endl;
-    for(int i = 0; i < session.getSolvesAmount(); i++){
-        Solve obtained_from_sesion = session.getSolveInSession(i);
-
-        std::cout << "ID: " <<  obtained_from_sesion.getID() << std::endl
-                  << "Scramble: " << obtained_from_sesion.getScramble() << std::endl
-                  << "Time: " << obtained_from_sesion.getFinalTime() << std::endl
-                  << "Penality: " << obtained_from_sesion.getPenalty() << std::endl
-                  << "Date:" << obtained_from_sesion.getDate() << std::endl;
-        std::cout << std::endl;
     }
 
     return 0;
