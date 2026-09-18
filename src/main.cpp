@@ -4,6 +4,7 @@
 # include "../headers/timer.hpp"
 # include "../headers/solve.hpp"
 # include "../headers/session.hpp"
+# include "../headers/database.hpp"
 
 # include <limits>
 # include <string>
@@ -47,11 +48,15 @@ std::string formatTime(double seconds){
 void clearScreen(){ std::cout << "\033[2J\033[1;1H"; }
 
 int main(){
-    Session session;
+    Database database;
+    database.loadSession();
+    int current_session = database.createSession();
+    Session session(current_session);
     Scramble scramble;
     Timer timer;
     Timer inspection;
     std::string scblr = "";
+    int loaded_solve = database.initSolve();
 
     int option = 0;
     while(option != 3){
@@ -67,7 +72,11 @@ int main(){
 
         clearScreen();
 
-        if(option == 3){ break; }
+        if(option == 3){
+            // for(int i = 0; i < session.getSolvesAmount(); i++){ database.saveSolve(session.getSolveInSession(i)); }
+            database.saveSession(session);
+            break;
+        }
         else if(option < 1 || option > 3){
             std::cout << "|-------------------------------------------------|" << std::endl
                       << "| There's not such option. Press ENTER to continue. |" << std::endl
@@ -94,17 +103,12 @@ int main(){
                           << "Scramble: " << obtained_from_sesion.getScramble() << std::endl
                           << "Time: " << obtained_from_sesion.getFinalTime() << std::endl
                           << "Penality: " << obtained_from_sesion.getPenalty() << std::endl
-                          << "Date:" << obtained_from_sesion.getDate() << std::endl;
-                std::cout << std::endl;
-
-                std::cout << "|--------------------------|" << std::endl
-                          << "| Press ENTER to continue. |" << std::endl
-                          << "|--------------------------|" << std::endl;
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cin.get();
-                continue;
-
+                          << "Date:" << obtained_from_sesion.getDate() << std::endl << std::endl;
             }
+            std::cout << "|--------------------------|" << std::endl
+                      << "| Press ENTER to continue. |" << std::endl
+                      << "|--------------------------|" << std::endl;
+     
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();
             continue;
@@ -139,7 +143,6 @@ int main(){
                 current_solve.setPenalty(Penalities::DNF);
                 break;
             }
-
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
 
@@ -160,18 +163,21 @@ int main(){
                 timer.stopTimer();
                 break;
             }
-
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
         std::cout << std::endl;
 
-        current_solve.setID(session.getSolvesAmount() + 1);
+        current_solve.setSessionID(current_session);
+        current_solve.setID(loaded_solve);
         current_solve.setScramble(scblr);
         current_solve.setRawTime(timer.getTime());
         current_solve.calculateFinalTime();
         current_solve.calculateDate();
 
         session.addSolve(current_solve);
+        database.saveSolve(current_solve);
+
+        loaded_solve++;
     }
 
     return 0;

@@ -4,6 +4,8 @@
 
 Solve::Solve(){}
 
+void Solve::setSessionID(int sessionID){ this->sessionID = sessionID; }
+
 void Solve::setID(int ID){ this->ID = ID; }
 
 void Solve::setScramble(std::string scramble){ this->scramble = scramble; }
@@ -12,8 +14,13 @@ void Solve::setRawTime(double raw_time){ this->raw_time = raw_time; }
 
 void Solve::setPenalty(Penalities penalty){ this->penalty = penalty; }
 
+void Solve::setFinalTime(double final_time){ this->final_time = final_time; }
+
+void Solve::setDate(std::string date){ this->date = date; }
 
 std::string Solve::getScramble() const{ return scramble; }
+
+int Solve::getSessionID() const{ return sessionID; }
 
 int Solve::getID() const{ return ID; }
 

@@ -11,6 +11,7 @@ enum class Penalities {
 
 class Solve {
     private:
+        int sessionID;
         int ID;
         std::string scramble;
         double raw_time, final_time;
@@ -20,13 +21,17 @@ class Solve {
         Solve();
 
         // Setters.
+        void setSessionID(int sessionID);
         void setID(int ID);
         void setScramble(std::string);
         void setRawTime(double raw_time);
         void setPenalty(Penalities penalty);
+        void setFinalTime(double final_time);
+        void setDate(std::string date);
 
         // Getters.
         std::string getScramble() const;
+        int getSessionID() const;
         int getID() const;
         double getRawTime() const;
         double getFinalTime() const;
