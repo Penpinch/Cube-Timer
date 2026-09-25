@@ -14,7 +14,7 @@ class Database {
         int getCurrentSolvesAmount() const;
 
         void saveSolve(const Solve& solve);
-        std::vector<Solve> loadSolves();
+        std::vector<Solve> loadSolves(int session_to_load);
 
         void saveSession(const Session& session);
         void loadSession();

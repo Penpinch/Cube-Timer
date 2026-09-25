@@ -1,6 +1,7 @@
-# include "../headers/solve.hpp"
-# include <string>
-# include <chrono>
+#include "../headers/solve.hpp"
+#include <string>
+#include <chrono>
+#include <iostream>
 
 Solve::Solve(){}
 
@@ -45,4 +46,13 @@ void Solve::calculateFinalTime(){
     if(penalty == Penalities::NORMAL){ final_time = raw_time; }
     else if(penalty == Penalities::PLUSTWO){ final_time = raw_time + 2; }
     else { final_time = -1.0; }
+}
+
+void Solve::showSolve() const{
+    std::cout << "Session ID: " << getSessionID() << std::endl
+              << "ID: " << getID() << std::endl
+              << "Scramble: " << getScramble() << std::endl
+              << "Time: " << getFinalTime() << std::endl
+              << "Penality: " << getPenalty() << std::endl
+              << "Date:" << getDate() << std::endl << std::endl;
 }

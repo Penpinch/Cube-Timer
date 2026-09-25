@@ -40,6 +40,8 @@ class Solve {
 
         void calculateDate();
         void calculateFinalTime();
+
+        void showSolve() const;
 };
 
 

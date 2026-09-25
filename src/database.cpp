@@ -15,11 +15,11 @@ void Database::saveSolve(const Solve &solve){
 
     if(!file.is_open()){ std::cerr << "Could't open the file." << std::endl; return; }
 
-    file << solve.getID() << '|' << solve.getScramble() << '|' << solve.getPenalty() << '|'
+    file << solve.getSessionID() << '|' << solve.getID() << '|' << solve.getScramble() << '|' << solve.getPenalty() << '|'
          << solve.getFinalTime() << '|' << solve.getDate() << "\n";
 }
  
-std::vector<Solve> Database::loadSolves(){
+std::vector<Solve> Database::loadSolves(int session_to_load){
     std::ifstream file("solves.txt");
 
     if(!file.is_open()){ std::cerr << "Couldn't open the file." << std::endl; return {}; }
@@ -30,8 +30,14 @@ std::vector<Solve> Database::loadSolves(){
     while(std::getline(file, line)){
         std::stringstream ss(line);
 
-        std::string id, scramble, penalty, final_time, date;
+        std::string session_id;
+        std::getline(ss, session_id, '|');
+        if(std::stoi(session_id) != session_to_load){
+            session_id.clear();
+            continue;
+        }
 
+        std::string id, scramble, penalty, final_time, date;
         std::getline(ss, id, '|');
         std::getline(ss, scramble, '|');
         std::getline(ss, penalty, '|');
@@ -40,6 +46,7 @@ std::vector<Solve> Database::loadSolves(){
 
         Solve s;
         s.setID(std::stoi(id));
+        s.setSessionID(std::stoi(session_id));
         s.setScramble(scramble);
         s.setPenalty(static_cast<Penalities>(std::stoi(penalty)));
         s.setFinalTime(std::stoi(final_time));
