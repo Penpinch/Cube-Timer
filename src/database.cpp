@@ -6,9 +6,11 @@
 # include <string>
 # include <vector>
 
-int Database::getCurrentSessionId() const{ return current_session_Id; }
+int Database::getCurrentSessionId() const{ return current_session_id; }
 
 int Database::getCurrentSolvesAmount() const{ return current_solve_amount; }
+
+int Database::getMaxId() const{ return max_id; }
 
 void Database::saveSolve(const Solve &solve){
     std::ofstream file("solves.txt", std::ios::app);
@@ -69,7 +71,7 @@ void Database::saveSession(const Session& session){
 void Database::loadSession(){
     std::ifstream file("session.txt");
 
-    current_session_Id = 0;
+    current_session_id = 0;
     current_solve_amount = 0;
 
     if(!file.is_open()){ return; }
@@ -80,13 +82,35 @@ void Database::loadSession(){
     while(file >> session_id >> separator >> solves_amount){
         if(separator != '|'){ std::cerr << "Invalid file format." << std::endl; return; }
 
-        if(session_id > current_session_Id){ 
-            current_session_Id = session_id;
+        if(session_id > current_session_id){ 
+            current_session_id = session_id;
             current_solve_amount = solves_amount;
         }
     }
 }
 
-int Database::createSession(){ return ++current_session_Id; }
+int Database::createSession(){ loadMaxSolveId(); return ++current_session_id; }
 
-int Database::initSolve(){ return ++current_solve_amount; }
+int Database::initSolve(){ return ++max_id; }
+
+void Database::loadMaxSolveId(){
+    std::ifstream file("solves.txt");
+
+    max_id = 0;
+    if(!file.is_open()){ return; }
+
+    std::string line;
+    while(std::getline(file, line)){
+        std::stringstream ss(line);
+
+        std::string session_id;
+        std::string solve_id;
+
+        std::getline(ss, session_id, '|');
+        std::getline(ss, solve_id, '|');
+
+        int id = std::stoi(solve_id);
+
+        if(id > max_id){ max_id = id; }
+    }
+}

@@ -7,11 +7,13 @@
 
 class Database {
     private:
-        int current_session_Id;
+        int current_session_id;
         int current_solve_amount;
+        int max_id;
     public:
         int getCurrentSessionId() const;
         int getCurrentSolvesAmount() const;
+        int getMaxId() const;
 
         void saveSolve(const Solve& solve);
         std::vector<Solve> loadSolves(int session_to_load);
@@ -20,6 +22,7 @@ class Database {
         void loadSession();
         int createSession();
         int initSolve();
+        void loadMaxSolveId();
 };
 
 # endif

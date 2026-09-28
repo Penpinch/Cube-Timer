@@ -111,6 +111,16 @@ int main(){
             continue;
         }
         else if(option == 3){
+            if(current_session == 1){
+                std::cout << "|-----------------------------------------------------|" << std::endl
+                          << "| No other sessions to load. Press ENTER to continue. |" << std::endl
+                          << "|-----------------------------------------------------|" << std::endl;
+    
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cin.get();
+                continue;
+            }
+
             int history_option;
             std::cout << "|--------------------------------|" << std::endl
                       << "| Last session history........(1)|" << std::endl
@@ -118,6 +128,7 @@ int main(){
                       << "|--------------------------------|" << std::endl;
             std::cout << "- Option: "; std::cin >> history_option;
             if(history_option < 1 || history_option > 2){ std::cout << "Not such option." << std::endl; continue; }
+
             
             std::vector<Solve> history;
 
