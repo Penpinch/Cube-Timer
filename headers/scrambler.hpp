@@ -1,13 +1,11 @@
-# ifndef SCRAMBLER_HPP
-# define SCRAMBLER_HPP
+#ifndef SCRAMBLER_HPP
+#define SCRAMBLER_HPP
 
-# include <vector>
-# include <string>
-# include <random>
+#include <vector>
+#include <string>
+#include <random>
 
-enum class SpecialCases {
-    NORMAL = 0, PRIME = 1, DOUBLE = 2
-};
+enum class SpecialCases { NORMAL = 0, PRIME = 1, DOUBLE = 2 };
 
 class Scramble {
     private:
@@ -21,4 +19,4 @@ class Scramble {
         std::string generate3x3Scramble();
 };
 
-# endif
+#endif

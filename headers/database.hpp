@@ -1,9 +1,9 @@
-# ifndef DATABASE_HPP
-# define DATABASE_HPP
+#ifndef DATABASE_HPP
+#define DATABASE_HPP
 
-# include "session.hpp"
-# include "solve.hpp"
-# include <vector>
+#include "session.hpp"
+#include "solve.hpp"
+#include <vector>
 
 class Database {
     private:
@@ -25,4 +25,4 @@ class Database {
         void loadMaxSolveId();
 };
 
-# endif
+#endif

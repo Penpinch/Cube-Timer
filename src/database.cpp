@@ -1,10 +1,10 @@
-# include "../headers/database.hpp"
-# include "../headers/solve.hpp"
-# include <fstream>
-# include <iostream>
-# include <sstream>
-# include <string>
-# include <vector>
+#include "../headers/database.hpp"
+#include "../headers/solve.hpp"
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 int Database::getCurrentSessionId() const{ return current_session_id; }
 

@@ -1,13 +1,9 @@
-# ifndef SOLVE_HPP
-# define SOLVE_HPP
+#ifndef SOLVE_HPP
+#define SOLVE_HPP
 
-# include <string>
+#include <string>
 
-enum class Penalities {
-    NORMAL = 0,
-    DNF = 1,
-    PLUSTWO = 2
-};
+enum class Penalities { NORMAL = 0, DNF = 1, PLUSTWO = 2 };
 
 class Solve {
     private:
@@ -20,7 +16,6 @@ class Solve {
     public:
         Solve();
 
-        // Setters.
         void setSessionID(int sessionID);
         void setID(int ID);
         void setScramble(std::string);
@@ -29,7 +24,6 @@ class Solve {
         void setFinalTime(double final_time);
         void setDate(std::string date);
 
-        // Getters.
         std::string getScramble() const;
         int getSessionID() const;
         int getID() const;
@@ -44,5 +38,4 @@ class Solve {
         void showSolve() const;
 };
 
-
-# endif
+#endif

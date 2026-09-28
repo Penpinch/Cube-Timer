@@ -1,4 +1,4 @@
-# include "../headers/scrambler.hpp"
+#include "../headers/scrambler.hpp"
 
 Scramble::Scramble() : rd(), gen(rd()){}
 

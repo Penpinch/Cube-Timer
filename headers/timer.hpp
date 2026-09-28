@@ -1,7 +1,7 @@
-# ifndef TIMER_HPP
-# define TIMER_HPP
+#ifndef TIMER_HPP
+#define TIMER_HPP
 
-# include <chrono>
+#include <chrono>
 
 class Timer {
     private:
@@ -15,4 +15,4 @@ class Timer {
         double getElapsedTime() const;
 };
 
-# endif
+#endif

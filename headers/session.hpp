@@ -1,8 +1,8 @@
-# ifndef SESSION_HPP
-# define SESSION_HPP
+#ifndef SESSION_HPP
+#define SESSION_HPP
 
-# include <vector>
-# include "solve.hpp"
+#include <vector>
+#include "solve.hpp"
 
 class Session {
     private:
@@ -20,4 +20,4 @@ class Session {
         void addSolve(const Solve& solve);
 };
 
-# endif
+#endif

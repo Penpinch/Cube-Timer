@@ -1,5 +1,5 @@
-# include "../headers/timer.hpp"
-# include <chrono>
+#include "../headers/timer.hpp"
+#include <chrono>
 
 Timer::Timer(): time(0.0){}
 
