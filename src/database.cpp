@@ -51,7 +51,7 @@ std::vector<Solve> Database::loadSolves(int session_to_load){
         s.setSessionID(std::stoi(session_id));
         s.setScramble(scramble);
         s.setPenalty(static_cast<Penalities>(std::stoi(penalty)));
-        s.setFinalTime(std::stoi(final_time));
+        s.setFinalTime(std::stod(final_time));
         s.setDate(date);
 
         v.push_back(s);

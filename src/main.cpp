@@ -1,3 +1,4 @@
+#include <ios>
 #include <iostream>
 #include <ostream>
 #include "../headers/scrambler.hpp"
@@ -5,6 +6,7 @@
 #include "../headers/solve.hpp"
 #include "../headers/session.hpp"
 #include "../headers/database.hpp"
+#include "../headers/statistics.hpp"
 
 #include <limits>
 #include <string>
@@ -50,6 +52,7 @@ void clearScreen(){ std::cout << "\033[2J\033[1;1H"; }
 
 int main(){
     Database database;
+    Statistic stats;
     database.loadSession();
     int current_session = database.createSession();
     Session session(current_session);
@@ -60,7 +63,7 @@ int main(){
     int loaded_solve = database.initSolve();
 
     int option = 0;
-    while(option != 4){
+    while(option != 5){
         clearScreen();
         std::cout << "|-------------------------|" << std::endl
                   << "|         OPTIONS         |" << std::endl
@@ -68,18 +71,19 @@ int main(){
                   << "| Make a solve.........(1)|" << std::endl
                   << "| Show solves..........(2)|" << std::endl
                   << "| History..............(3)|" << std::endl
-                  << "| Exit.................(4)|" << std::endl
+                  << "| Statistics...........(4)|" << std::endl
+                  << "| Exit.................(5)|" << std::endl
                   << "|-------------------------|" << std::endl;
         std::cout << "- Option: "; std::cin >> option;
 
         clearScreen();
 
-        if(option == 4){
+        if(option == 5){
             if(session.getSolvesAmount() == 0){ break; }
             database.saveSession(session);
             break;
         }
-        else if(option < 1 || option > 4){
+        else if(option < 1 || option > 5){
             std::cout << "|-------------------------------------------------|" << std::endl
                       << "| There's not such option. Press ENTER to continue. |" << std::endl
                       << "|------------------------------------------|" << std::endl;
@@ -140,6 +144,39 @@ int main(){
             }
 
             for(auto it = history.begin(); it != history.end(); ++it){ it->showSolve(); }
+
+            std::cout << "|--------------------------|" << std::endl
+                      << "| Press ENTER to continue. |" << std::endl
+                      << "|--------------------------|" << std::endl;
+    
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.get();
+            continue;
+        }
+        else if(option == 4){
+            int stats_option;
+            std::cout << "|--------------------------------|" << std::endl
+                      << "| Current session stats.......(1)|" << std::endl
+                      << "| Last session stats..........(2)|" << std::endl
+                      << "| Select session history......(3)|" << std::endl
+                      << "|--------------------------------|" << std::endl;
+            std::cout << "- Option: "; std::cin >> stats_option;
+            if(stats_option < 1 || stats_option > 3){ std::cout << "Not such option." << std::endl; continue; }
+
+            std::vector<Solve> stats_loaded;
+
+            if(stats_option == 1){ stats_loaded = session.getAllSolvesInSession(); }
+            else if(stats_option == 2){ stats_loaded = database.loadSolves(current_session - 1); }
+            else {
+                int stats_session_id;
+                std::cout << "- Session ID: "; std::cin >> stats_session_id;
+                stats_loaded = database.loadSolves(stats_session_id);
+            }
+
+            stats.calculateStats(stats_loaded);
+            std::cout << "Best: " << std::fixed << std::setprecision(2) << stats.getBest() << std::endl
+                      << "Worst: " << std::fixed << std::setprecision(2) << stats.getWorst() << std::endl
+                      << "Average: " << std::fixed << std::setprecision(2) << stats.getAverage() << std::endl;
 
             std::cout << "|--------------------------|" << std::endl
                       << "| Press ENTER to continue. |" << std::endl

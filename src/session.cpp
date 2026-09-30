@@ -1,10 +1,13 @@
 #include "../headers/session.hpp"
+#include <vector>
 
 Session::Session(int id): id(id){}
 
 int Session::getSessionID() const{ return id; }
 
 Solve Session::getSolveInSession(int index) const{ return solves[index]; }
+
+std::vector<Solve> Session::getAllSolvesInSession() const{ return solves; }
 
 int Session::getSolvesAmount() const{ return solves_in_session; }
 

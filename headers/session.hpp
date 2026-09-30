@@ -14,6 +14,7 @@ class Session {
         Session(int id);
         int getSessionID() const;
         Solve getSolveInSession(int index) const;
+        std::vector<Solve> getAllSolvesInSession() const;
         int getSolvesAmount() const;
 
         void updateSolvesInSession();
