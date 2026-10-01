@@ -154,14 +154,21 @@ int main(){
             continue;
         }
         else if(option == 4){
-            int stats_option;
-            std::cout << "|----------------------------------|" << std::endl
-                      << "| Current session stats.........(1)|" << std::endl
-                      << "| Last session stats............(2)|" << std::endl
-                      << "| Select session history........(3)|" << std::endl
-                      << "|----------------------------------|" << std::endl;
-            std::cout << "- Option: "; std::cin >> stats_option;
-            if(stats_option < 1 || stats_option > 3){ std::cout << "Not such option." << std::endl; continue; }
+            int stats_option = 0;
+            if(current_session == 1){ 
+                std::cout << "|----------------------------|" << std::endl
+                          << "| Current session stats      |" << std::endl
+                          << "|----------------------------|" << std::endl;
+                stats_option = 1; 
+            } else {
+                std::cout << "|----------------------------------|" << std::endl
+                          << "| Current session stats.........(1)|" << std::endl
+                          << "| Last session stats............(2)|" << std::endl
+                          << "| Select session history........(3)|" << std::endl
+                          << "|----------------------------------|" << std::endl;
+                std::cout << "- Option: "; std::cin >> stats_option;
+                if(stats_option < 1 || stats_option > 3){ std::cout << "Not such option." << std::endl; continue; }
+            }
 
             std::vector<Solve> stats_loaded;
 
