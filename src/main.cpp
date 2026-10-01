@@ -65,15 +65,15 @@ int main(){
     int option = 0;
     while(option != 5){
         clearScreen();
-        std::cout << "|-------------------------|" << std::endl
-                  << "|         OPTIONS         |" << std::endl
-                  << "|-------------------------|" << std::endl
-                  << "| Make a solve.........(1)|" << std::endl
-                  << "| Show solves..........(2)|" << std::endl
-                  << "| History..............(3)|" << std::endl
-                  << "| Statistics...........(4)|" << std::endl
-                  << "| Exit.................(5)|" << std::endl
-                  << "|-------------------------|" << std::endl;
+        std::cout << "|-------------------------------|" << std::endl
+                  << "|            OPTIONS            |" << std::endl
+                  << "|-------------------------------|" << std::endl
+                  << "| Make a solve...............(1)|" << std::endl
+                  << "| Show solves................(2)|" << std::endl
+                  << "| History....................(3)|" << std::endl
+                  << "| Statistics.................(4)|" << std::endl
+                  << "| Exit.......................(5)|" << std::endl
+                  << "|-------------------------------|" << std::endl;
         std::cout << "- Option: "; std::cin >> option;
 
         clearScreen();
@@ -84,9 +84,9 @@ int main(){
             break;
         }
         else if(option < 1 || option > 5){
-            std::cout << "|-------------------------------------------------|" << std::endl
+            std::cout << "|---------------------------------------------------|" << std::endl
                       << "| There's not such option. Press ENTER to continue. |" << std::endl
-                      << "|------------------------------------------|" << std::endl;
+                      << "|---------------------------------------------------|" << std::endl;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();
             continue;
@@ -155,11 +155,11 @@ int main(){
         }
         else if(option == 4){
             int stats_option;
-            std::cout << "|--------------------------------|" << std::endl
-                      << "| Current session stats.......(1)|" << std::endl
-                      << "| Last session stats..........(2)|" << std::endl
-                      << "| Select session history......(3)|" << std::endl
-                      << "|--------------------------------|" << std::endl;
+            std::cout << "|----------------------------------|" << std::endl
+                      << "| Current session stats.........(1)|" << std::endl
+                      << "| Last session stats............(2)|" << std::endl
+                      << "| Select session history........(3)|" << std::endl
+                      << "|----------------------------------|" << std::endl;
             std::cout << "- Option: "; std::cin >> stats_option;
             if(stats_option < 1 || stats_option > 3){ std::cout << "Not such option." << std::endl; continue; }
 
@@ -176,6 +176,8 @@ int main(){
             stats.calculateStats(stats_loaded);
             std::cout << "Best: " << std::fixed << std::setprecision(2) << stats.getBest() << std::endl
                       << "Worst: " << std::fixed << std::setprecision(2) << stats.getWorst() << std::endl
+                      << "Ao5:" << std::fixed << std::setprecision(2) << stats.getAo5() << std::endl
+                      << "Ao12:" << std::fixed << std::setprecision(2) << stats.getAo12() << std::endl
                       << "Average: " << std::fixed << std::setprecision(2) << stats.getAverage() << std::endl;
 
             std::cout << "|--------------------------|" << std::endl
@@ -223,9 +225,9 @@ int main(){
         timer.runTimer();
         clearScreen();
 
-        std::cout << "|--------------------------|" << std::endl
-                  << "|          SOLVE!!!        |" << std::endl
-                  << "|--------------------------|" << std::endl << std::endl;
+        std::cout << "|----------------------------------|" << std::endl
+                  << "|              SOLVE!!!            |" << std::endl
+                  << "|----------------------------------|" << std::endl << std::endl;
 
         while(true){
             double elapsed = timer.getElapsedTime();
