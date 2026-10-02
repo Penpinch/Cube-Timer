@@ -13,7 +13,7 @@ void Solve::setScramble(std::string scramble){ this->scramble = scramble; }
 
 void Solve::setRawTime(double raw_time){ this->raw_time = raw_time; }
 
-void Solve::setPenalty(Penalities penalty){ this->penalty = penalty; }
+void Solve::setPenalty(Penality penalty){ this->penalty = penalty; }
 
 void Solve::setFinalTime(double final_time){ this->final_time = final_time; }
 
@@ -43,16 +43,17 @@ void Solve::calculateDate(){
 }
 
 void Solve::calculateFinalTime(){
-    if(penalty == Penalities::NORMAL){ final_time = raw_time; }
-    else if(penalty == Penalities::PLUSTWO){ final_time = raw_time + 2; }
+    if(penalty == Penality::NORMAL){ final_time = raw_time; }
+    else if(penalty == Penality::PLUSTWO){ final_time = raw_time + 2; }
     else { final_time = -1.0; }
 }
 
 void Solve::showSolve() const{
     std::cout << "Session ID: " << getSessionID() << std::endl
               << "ID: " << getID() << std::endl
-              << "Scramble: " << getScramble() << std::endl
-              << "Time: " << getFinalTime() << std::endl
-              << "Penality: " << getPenalty() << std::endl
+              << "Scramble: " << getScramble() << std::endl;
+    if(getFinalTime() != -1){ std::cout << "Time: " << getFinalTime() << std::endl; }
+    else { std::cout << "Time: " << "DNF" << std::endl; }
+    std::cout << "Penality: " << getPenalty() << std::endl
               << "Date:" << getDate() << std::endl << std::endl;
 }

@@ -3,7 +3,7 @@
 
 #include <string>
 
-enum class Penalities { NORMAL = 0, DNF = 1, PLUSTWO = 2 };
+enum class Penality { NORMAL = 0, DNF = 1, PLUSTWO = 2 };
 
 class Solve {
     private:
@@ -11,7 +11,7 @@ class Solve {
         int ID;
         std::string scramble;
         double raw_time, final_time;
-        Penalities penalty;
+        Penality penalty;
         std::string date;
     public:
         Solve();
@@ -20,7 +20,7 @@ class Solve {
         void setID(int ID);
         void setScramble(std::string);
         void setRawTime(double raw_time);
-        void setPenalty(Penalities penalty);
+        void setPenalty(Penality penalty);
         void setFinalTime(double final_time);
         void setDate(std::string date);
 

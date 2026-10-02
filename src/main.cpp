@@ -210,50 +210,63 @@ int main(){
         inspection.runTimer();
         clearScreen();
 
-        while(true){
-            int elapsed = static_cast<int>(inspection.getElapsedTime());
-
-            std::cout << "\r| " << elapsed << " |" << std::flush;
-
-            if(keyPressed()){
-                consumeKey();
-                inspection.stopTimer();
-                break;
-            }
-
-            if(elapsed >= 15){
-                inspection.stopTimer();
-                current_solve.setPenalty(Penalities::DNF);
-                break;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        }
-
-        timer.runTimer();
-        clearScreen();
-
         std::cout << "|----------------------------------|" << std::endl
-                  << "|              SOLVE!!!            |" << std::endl
+                  << "|            INSPECTION            |" << std::endl
                   << "|----------------------------------|" << std::endl << std::endl;
 
         while(true){
-            double elapsed = timer.getElapsedTime();
+            double elapsed = static_cast<double>(inspection.getElapsedTime());
 
-            std::cout << "\r| " << formatTime(elapsed) << " |" << std::flush;
+            if(elapsed >= 15){ std::cout << "\r| " << "+2" << " |" << std::flush; }
+            else {
+                std::cout << "\r| " << std::fixed << std::setprecision(0) << elapsed << " |" << std::flush; 
+            }
 
             if(keyPressed()){
                 consumeKey();
-                timer.stopTimer();
+                inspection.stopTimer();
                 break;
             }
+
+            if(elapsed >= 17){
+                inspection.stopTimer();
+                current_solve.setPenalty(Penality::DNF);
+                break;
+            }
+
+            if(elapsed >= 15){ current_solve.setPenalty(Penality::PLUSTWO); }
+            
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
-        std::cout << std::endl;
+
+        if(static_cast<Penality>(current_solve.getPenalty()) != Penality::DNF){
+            timer.runTimer();
+            clearScreen();
+
+            std::cout << "|----------------------------------|" << std::endl
+                      << "|              SOLVE!!!            |" << std::endl
+                      << "|----------------------------------|" << std::endl << std::endl;
+
+            while(true){
+                double elapsed = timer.getElapsedTime();
+
+                std::cout << "\r| " << formatTime(elapsed) << " |" << std::flush;
+
+                if(keyPressed()){
+                    consumeKey();
+                    timer.stopTimer();
+                    break;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            }
+            std::cout << std::endl;
+        }
 
         current_solve.setSessionID(current_session);
         current_solve.setID(loaded_solve);
         current_solve.setScramble(scblr);
-        current_solve.setRawTime(timer.getTime());
+        if(static_cast<Penality>(current_solve.getPenalty()) == Penality::DNF){ current_solve.setRawTime(0.0); }
+        else { current_solve.setRawTime(timer.getTime()); }
         current_solve.calculateFinalTime();
         current_solve.calculateDate();
 

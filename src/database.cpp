@@ -18,7 +18,7 @@ void Database::saveSolve(const Solve &solve){
     if(!file.is_open()){ std::cerr << "Could't open the file." << std::endl; return; }
 
     file << solve.getSessionID() << '|' << solve.getID() << '|' << solve.getScramble() << '|' << solve.getPenalty() << '|'
-         << solve.getFinalTime() << '|' << solve.getDate() << "\n";
+         << solve.getRawTime() << '|' << solve.getDate() << "\n";
 }
  
 std::vector<Solve> Database::loadSolves(int session_to_load){
@@ -39,19 +39,20 @@ std::vector<Solve> Database::loadSolves(int session_to_load){
             continue;
         }
 
-        std::string id, scramble, penalty, final_time, date;
+        std::string id, scramble, penalty, raw_time, date;
         std::getline(ss, id, '|');
         std::getline(ss, scramble, '|');
         std::getline(ss, penalty, '|');
-        std::getline(ss, final_time, '|');
+        std::getline(ss, raw_time, '|');
         std::getline(ss, date, '|');
 
         Solve s;
         s.setID(std::stoi(id));
         s.setSessionID(std::stoi(session_id));
         s.setScramble(scramble);
-        s.setPenalty(static_cast<Penalities>(std::stoi(penalty)));
-        s.setFinalTime(std::stod(final_time));
+        s.setPenalty(static_cast<Penality>(std::stoi(penalty)));
+        s.setRawTime(std::stod(raw_time));
+        s.calculateFinalTime(); 
         s.setDate(date);
 
         v.push_back(s);
