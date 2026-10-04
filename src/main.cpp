@@ -53,7 +53,7 @@ void clearScreen(){ std::cout << "\033[2J\033[1;1H"; }
 int main(){
     Database database;
     Statistic stats;
-    database.loadSession();
+    Session loaded = database.loadSession();
     int current_session = database.createSession();
     Session session(current_session);
     Scramble scramble;
@@ -62,8 +62,27 @@ int main(){
     std::string scblr = "";
     int loaded_solve = database.initSolve();
 
+    int puzzle_option;
+    std::cout << "|-------------------------------|" << std::endl
+              << "|            PUZZLES            |" << std::endl
+              << "|-------------------------------|" << std::endl
+              << "| 2x2........................(1)|" << std::endl
+              << "| 3x3........................(2)|" << std::endl
+              << "| 4x4........................(3)|" << std::endl
+              << "|-------------------------------|" << std::endl;
+    std::cout << "- Option: "; std::cin >> puzzle_option;
+
+    Event event;
+    switch(puzzle_option){
+        case 1: { event = Event::CUBE_2X2; break; }
+        case 2: { event = Event::CUBE_3X3; break; }
+        case 3: { event = Event::CUBE_4X4; break; }
+        default: { std::cerr << "There is no such a puzzle" << std::endl; return 1; }
+    }
+    session.setEvent(event);
+
     int option = 0;
-    while(option != 5){
+    while(option != 6){
         clearScreen();
         std::cout << "|-------------------------------|" << std::endl
                   << "|            OPTIONS            |" << std::endl
@@ -72,24 +91,25 @@ int main(){
                   << "| Show solves................(2)|" << std::endl
                   << "| History....................(3)|" << std::endl
                   << "| Statistics.................(4)|" << std::endl
-                  << "| Exit.......................(5)|" << std::endl
+                  << "| Change puzzle..............(5)|" << std::endl
+                  << "| Exit.......................(6)|" << std::endl
                   << "|-------------------------------|" << std::endl;
         std::cout << "- Option: "; std::cin >> option;
 
         clearScreen();
 
-        if(option == 5){
-            if(session.getSolvesAmount() == 0){ break; }
-            database.saveSession(session);
-            break;
-        }
-        else if(option < 1 || option > 5){
+        if(option < 1 || option > 6){
             std::cout << "|---------------------------------------------------|" << std::endl
                       << "| There's not such option. Press ENTER to continue. |" << std::endl
                       << "|---------------------------------------------------|" << std::endl;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();
             continue;
+        }
+        else if(option == 6){
+            if(session.getSolvesAmount() == 0){ break; }
+            database.saveSession(session);
+            break;
         }
         else if(option == 2){
             if(session.getSolvesAmount() == 0){
@@ -133,15 +153,26 @@ int main(){
             std::cout << "- Option: "; std::cin >> history_option;
             if(history_option < 1 || history_option > 2){ std::cout << "Not such option." << std::endl; continue; }
 
-            
             std::vector<Solve> history;
 
-            if(history_option == 1){ history = database.loadSolves(current_session - 1); }
+            if(history_option == 1){ history = database.loadSolves(current_session - 1); loaded = database.loadSession(); }
             else {
                 int history_session_id;
                 std::cout << "- Session ID: "; std::cin >> history_session_id;
                 history = database.loadSolves(history_session_id);
+                loaded = database.loadSession(history_session_id);
             }
+
+            std::string pzzl;
+            switch(loaded.getEvent()){
+                case Event::CUBE_2X2: { pzzl = "2x2"; break; }
+                case Event::CUBE_3X3: { pzzl = "3x3"; break; }
+                case Event::CUBE_4X4: { pzzl = "4x4"; break; }
+            }
+
+            std::cout << "|--------------------------|" << std::endl
+                      << "|        PUZZLE: " << pzzl << "       |" << std::endl
+                      << "|--------------------------|" << std::endl;
 
             for(auto it = history.begin(); it != history.end(); ++it){ it->showSolve(); }
 
@@ -195,12 +226,36 @@ int main(){
             std::cin.get();
             continue;
         }
+        else if(option == 5){
+            database.saveSession(session);
+            current_session = database.createSession();
+            session = Session(current_session);
 
+            int puzzle_option;
+
+            std::cout << "|-------------------------------|" << std::endl
+                      << "|            PUZZLES            |" << std::endl
+                      << "|-------------------------------|" << std::endl
+                      << "| 2x2........................(1)|" << std::endl
+                      << "| 3x3........................(2)|" << std::endl
+                      << "| 4x4........................(3)|" << std::endl
+                      << "|-------------------------------|" << std::endl;
+            std::cout << "- Option: "; std::cin >> puzzle_option;
+
+            switch(puzzle_option){
+                case 1: { session.setEvent(Event::CUBE_2X2); break; }
+                case 2: { session.setEvent(Event::CUBE_3X3); break; }
+                case 3: { session.setEvent(Event::CUBE_4X4); break; }
+                default: { std::cout << "There is not such a puzzle" << std::endl; continue; }
+            }
+            continue;
+        }
+       
         Solve current_solve;
-        scblr = scramble.generate3x3Scramble();
+        scblr = scramble.generate(session.getEvent());
 
         std::cout << "|----------------------------------------|" << std::endl
-                  << "|   " << scblr << "    |" << std::endl
+                  << "|   " << scblr << "    |" << std::endl // cada 8 movimientos salta linea
                   << "|----------------------------------------|" << std::endl
                   << "|  Press ENTER to start the inspection   |" << std::endl
                   << "|----------------------------------------|" << std::endl;

@@ -66,28 +66,54 @@ void Database::saveSession(const Session& session){
 
     if(!file.is_open()){ std::cerr << "Couldn't open the file." << std::endl; return; }
 
-    file << session.getSessionID() << '|' << session.getSolvesAmount() << '\n';
+    file << session.getSessionID() << '|' << static_cast<int>(session.getEvent()) << '|' << session.getSolvesAmount() << '\n';
 }
 
-void Database::loadSession(){
+Session Database::loadSession(){
     std::ifstream file("session.txt");
 
     current_session_id = 0;
     current_solve_amount = 0;
 
-    if(!file.is_open()){ return; }
+    if(!file.is_open()){ return Session(); }
 
-    int session_id = 0, solves_amount = 0;
+    int session_id = 0, solves_amount = 0, event = -1;
     char separator;
+    Session last_session;
 
-    while(file >> session_id >> separator >> solves_amount){
-        if(separator != '|'){ std::cerr << "Invalid file format." << std::endl; return; }
+    while(file >> session_id >> separator >> event >> separator >> solves_amount){
+        if(separator != '|'){ std::cerr << "Invalid file format." << std::endl; return Session(); }
 
         if(session_id > current_session_id){ 
             current_session_id = session_id;
             current_solve_amount = solves_amount;
+
+            last_session = Session(session_id);
+            last_session.setEvent(static_cast<Event>(event));
         }
     }
+    return last_session;
+}
+
+Session Database::loadSession(int session_to_load){
+    std::ifstream file("session.txt");
+    if(!file.is_open()){ return Session(); }
+
+    int session_id = 0, solves_amount = 0, event = -1;
+    char separator;
+
+    while(file >> session_id >> separator >> event >> separator >> solves_amount){
+        if(separator != '|'){ std::cerr << "Invalid file format." << std::endl; return Session(); }
+
+        if(session_id == session_to_load){
+            Session s(session_id);
+            s.setEvent(static_cast<Event>(event));
+
+            return s;
+        }
+    }
+
+    return Session();
 }
 
 int Database::createSession(){ loadMaxSolveId(); return ++current_session_id; }

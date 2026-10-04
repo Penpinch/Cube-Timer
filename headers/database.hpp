@@ -19,7 +19,8 @@ class Database {
         std::vector<Solve> loadSolves(int session_to_load);
 
         void saveSession(const Session& session);
-        void loadSession();
+        Session loadSession();
+        Session loadSession(int session_to_load);
         int createSession();
         int initSolve();
         void loadMaxSolveId();
