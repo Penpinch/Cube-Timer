@@ -18,22 +18,14 @@ class Database {
         sqlite3 *openDatabase();
         void closeDatabase(sqlite3 *db);
         void createTables(sqlite3 *db);
-        void saveSolve(sqlite3 *db, const Solve &solve); // 1
-        void saveSession(sqlite3 *db, const Session &session); // 2
-        void loadMaxSolveId(sqlite3 *db); // 3
-        Session loadSession(sqlite3 *db); // 4
-
-
-
-        // void saveSolve(const Solve &solve); 1
-        std::vector<Solve> loadSolves(int session_to_load);
-
-        // void saveSession(const Session& session); 2
-        // Session loadSession(); 4
-        Session loadSession(int session_to_load);
-        int createSession();
+        void saveSolve(sqlite3 *db, const Solve &solve);
+        void saveSession(sqlite3 *db, const Session &session);
+        void loadMaxSolveId(sqlite3 *db);
+        Session loadSession(sqlite3 *db);
+        Session loadSession(sqlite3 *db, int session_to_load);
+        std::vector<Solve> loadSolves(sqlite3 *db, int session_to_load);
+        int createSession(sqlite3 *db);
         int initSolve();
-        // void loadMaxSolveId(); 3
 };
 
 #endif
