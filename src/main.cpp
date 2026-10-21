@@ -64,8 +64,6 @@ int main(){
     Timer timer;
     Timer inspection;
     std::string scblr = "";
-    // database.loadMaxSolveId(db);
-    // int loaded_solve = database.initSolve();
 
     int puzzle_option;
     std::cout << "|-------------------------------|" << std::endl
@@ -233,7 +231,6 @@ int main(){
             continue;
         }
         else if(option == 5){
-            // database.saveSession(db, session);
             int puzzle_option;
 
             std::cout << "|-------------------------------|" << std::endl
@@ -327,7 +324,6 @@ int main(){
         }
 
         current_solve.setSessionID(current_session);
-        // current_solve.setID(loaded_solve);
         current_solve.setScramble(scblr);
         if(static_cast<Penality>(current_solve.getPenalty()) == Penality::DNF){ current_solve.setRawTime(0.0); }
         else { current_solve.setRawTime(timer.getTime()); }
