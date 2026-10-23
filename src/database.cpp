@@ -88,7 +88,7 @@ void Database::saveSolve(sqlite3 *db, Solve &solve){
 
 void Database::saveSession(sqlite3 *db, const Session &session){
     sqlite3_stmt *stmt;
-    const char *sql = "INSERT INTO sessions (id, event) VALUES (?, ?)";
+    const char *sql = "INSERT INTO sessions (id, event, date) VALUES (?, ?, ?)";
 
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if(rc != SQLITE_OK){
@@ -97,6 +97,7 @@ void Database::saveSession(sqlite3 *db, const Session &session){
     }
     sqlite3_bind_int(stmt, 1, session.getSessionID());
     sqlite3_bind_int(stmt, 2, static_cast<int>(session.getEvent()));
+    sqlite3_bind_text(stmt, 3, session.getDate().c_str(), -1, SQLITE_TRANSIENT);
 
     rc = sqlite3_step(stmt);
     if(rc != SQLITE_DONE){
@@ -110,23 +111,11 @@ void Database::saveSession(sqlite3 *db, const Session &session){
     return;
 }
 
-// void Database::loadMaxSolveId(sqlite3 *db){
-//     int last_id = 0;
-//     sqlite3_stmt *stmt = nullptr;
-//     const char *sql = "SELECT MAX(id) FROM solves";
-//
-//     if(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK){
-//         if(sqlite3_step(stmt) == SQLITE_ROW && sqlite3_column_type(stmt, 0) != SQLITE_NULL){ last_id = sqlite3_column_int(stmt, 0); }
-//     }
-//     max_id = last_id;
-//     sqlite3_finalize(stmt);
-// }
-
 Session Database::loadSession(sqlite3 *db){
     current_session_id = 0;
     current_solve_amount = 0;
     const char *sql = R"(
-        SELECT id, event, (SELECT COUNT(*) FROM solves WHERE session_id = sessions.id)
+        SELECT id, event, date (SELECT COUNT(*) FROM solves WHERE session_id = sessions.id)
         FROM sessions 
         ORDER BY id DESC 
         LIMIT 1;
@@ -144,16 +133,18 @@ Session Database::loadSession(sqlite3 *db){
     if(sqlite3_step(stmt) == SQLITE_ROW){
         current_session_id = sqlite3_column_int(stmt, 0);
         int event = sqlite3_column_int(stmt, 1);
-        current_solve_amount = sqlite3_column_int(stmt, 2);
+        const unsigned char *date = sqlite3_column_text(stmt, 2);
+
         last_session = Session(current_session_id);
         last_session.setEvent(static_cast<Event>(event));
+        last_session.setDate(date ? reinterpret_cast<const char*>(date) : "");
     }
     sqlite3_finalize(stmt);
     return last_session;
 }
 
 Session Database::loadSession(sqlite3 *db, int session_to_load){
-    const char *sql = R"( SELECT id, event FROM sessions WHERE id = ?; )";
+    const char *sql = R"( SELECT id, event, date FROM sessions WHERE id = ?; )";
 
     sqlite3_stmt *stmt = nullptr;
 
@@ -168,9 +159,11 @@ Session Database::loadSession(sqlite3 *db, int session_to_load){
     if(sqlite3_step(stmt) == SQLITE_ROW){
         int id = sqlite3_column_int(stmt, 0);
         int event = sqlite3_column_int(stmt, 1);
+        const unsigned char *date = sqlite3_column_text(stmt, 2);
 
         s = Session(id);
         s.setEvent(static_cast<Event>(event));
+        s.setDate(date ? reinterpret_cast<const char*>(date) : "");
     }
     sqlite3_finalize(stmt);
     return s;
@@ -226,5 +219,3 @@ int Database::createSession(sqlite3 *db){
     current_session_id = last_session + 1;
     return current_session_id;
 }
-
-// int Database::initSolve(){ return ++max_id; }

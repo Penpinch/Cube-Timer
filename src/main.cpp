@@ -230,7 +230,7 @@ int main(){
             std::cin.get();
             continue;
         }
-        else if(option == 5){
+        else if(option == 5){ // Agregar confirmacion para no crear nueva session si se selecciona la misma en la que se esta.
             int puzzle_option;
 
             std::cout << "|-------------------------------|" << std::endl
@@ -276,11 +276,11 @@ int main(){
                   << "|----------------------------------|" << std::endl << std::endl;
 
         while(true){
-            double elapsed = static_cast<double>(inspection.getElapsedTime());
+            double elapsed = static_cast<int>(inspection.getElapsedTime());
 
             if(elapsed >= 15){ std::cout << "\r| " << "+2" << " |" << std::flush; }
             else {
-                std::cout << "\r| " << std::fixed << std::setprecision(0) << elapsed << " |" << std::flush; 
+                std::cout << "\r| " << elapsed << " |" << std::flush; 
             }
 
             if(keyPressed()){
@@ -328,10 +328,10 @@ int main(){
         if(static_cast<Penality>(current_solve.getPenalty()) == Penality::DNF){ current_solve.setRawTime(0.0); }
         else { current_solve.setRawTime(timer.getTime()); }
         current_solve.calculateFinalTime();
-        current_solve.calculateDate();
+        current_solve.setDate(session.getDate());
 
-        session.addSolve(current_solve);
         database.saveSolve(db, current_solve);
+        session.addSolve(current_solve);
     }
 
     return 0;

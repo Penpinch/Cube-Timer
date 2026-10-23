@@ -32,7 +32,6 @@ class Solve {
         int getPenalty() const;
         std::string getDate() const;
 
-        void calculateDate();
         void calculateFinalTime();
 
         void showSolve() const;
