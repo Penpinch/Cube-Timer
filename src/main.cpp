@@ -230,8 +230,8 @@ int main(){
             std::cin.get();
             continue;
         }
-        else if(option == 5){ // Agregar confirmacion para no crear nueva session si se selecciona la misma en la que se esta.
-            int puzzle_option;
+        else if(option == 5){
+            int new_puzzle_option;
 
             std::cout << "|-------------------------------|" << std::endl
                       << "|            PUZZLES            |" << std::endl
@@ -240,9 +240,11 @@ int main(){
                       << "| 3x3........................(2)|" << std::endl
                       << "| 4x4........................(3)|" << std::endl
                       << "|-------------------------------|" << std::endl;
-            std::cout << "- Option: "; std::cin >> puzzle_option;
+            std::cout << "- Option: "; std::cin >> new_puzzle_option;
 
             if(puzzle_option < 1 || puzzle_option > 3){ std::cout << "There is not such a puzzle" << std::endl; continue; }
+            if(puzzle_option == new_puzzle_option){ continue; }
+            puzzle_option = new_puzzle_option;
 
             current_session = database.createSession(db);
             session = Session(current_session);
