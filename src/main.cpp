@@ -19,6 +19,8 @@
 #include <iomanip>
 #include <sstream>
 
+// g++ main.cpp -o programa -lsqlite3
+
 bool keyPressed(){
     termios oldt, newt;
     tcgetattr(STDIN_FILENO, &oldt);
@@ -52,15 +54,16 @@ void clearScreen(){ std::cout << "\033[2J\033[1;1H"; }
 
 int main(){
     Database database;
+    sqlite3 *db = database.openDatabase();
+    database.createTables(db);
     Statistic stats;
-    Session loaded = database.loadSession();
-    int current_session = database.createSession();
+    Session loaded = database.loadSession(db);
+    int current_session = database.createSession(db);
     Session session(current_session);
     Scramble scramble;
     Timer timer;
     Timer inspection;
     std::string scblr = "";
-    int loaded_solve = database.initSolve();
 
     int puzzle_option;
     std::cout << "|-------------------------------|" << std::endl
@@ -80,6 +83,7 @@ int main(){
         default: { std::cerr << "There is no such a puzzle" << std::endl; return 1; }
     }
     session.setEvent(event);
+    database.saveSession(db, session);
 
     int option = 0;
     while(option != 6){
@@ -107,8 +111,8 @@ int main(){
             continue;
         }
         else if(option == 6){
-            if(session.getSolvesAmount() == 0){ break; }
-            database.saveSession(session);
+            sqlite3_exec(db, "DELETE FROM sessions WHERE id NOT IN (SELECT DISTINCT session_id FROM solves)", nullptr, nullptr, nullptr);
+            database.closeDatabase(db);
             break;
         }
         else if(option == 2){
@@ -155,12 +159,12 @@ int main(){
 
             std::vector<Solve> history;
 
-            if(history_option == 1){ history = database.loadSolves(current_session - 1); loaded = database.loadSession(); }
+            if(history_option == 1){ history = database.loadSolves(db,current_session - 1); loaded = database.loadSession(db); }
             else {
                 int history_session_id;
                 std::cout << "- Session ID: "; std::cin >> history_session_id;
-                history = database.loadSolves(history_session_id);
-                loaded = database.loadSession(history_session_id);
+                history = database.loadSolves(db, history_session_id);
+                loaded = database.loadSession(db, history_session_id);
             }
 
             std::string pzzl;
@@ -204,11 +208,11 @@ int main(){
             std::vector<Solve> stats_loaded;
 
             if(stats_option == 1){ stats_loaded = session.getAllSolvesInSession(); }
-            else if(stats_option == 2){ stats_loaded = database.loadSolves(current_session - 1); }
+            else if(stats_option == 2){ stats_loaded = database.loadSolves(db, current_session - 1); }
             else {
                 int stats_session_id;
                 std::cout << "- Session ID: "; std::cin >> stats_session_id;
-                stats_loaded = database.loadSolves(stats_session_id);
+                stats_loaded = database.loadSolves(db, stats_session_id);
             }
 
             stats.calculateStats(stats_loaded);
@@ -227,11 +231,7 @@ int main(){
             continue;
         }
         else if(option == 5){
-            database.saveSession(session);
-            current_session = database.createSession();
-            session = Session(current_session);
-
-            int puzzle_option;
+            int new_puzzle_option;
 
             std::cout << "|-------------------------------|" << std::endl
                       << "|            PUZZLES            |" << std::endl
@@ -240,7 +240,14 @@ int main(){
                       << "| 3x3........................(2)|" << std::endl
                       << "| 4x4........................(3)|" << std::endl
                       << "|-------------------------------|" << std::endl;
-            std::cout << "- Option: "; std::cin >> puzzle_option;
+            std::cout << "- Option: "; std::cin >> new_puzzle_option;
+
+            if(puzzle_option < 1 || puzzle_option > 3){ std::cout << "There is not such a puzzle" << std::endl; continue; }
+            if(puzzle_option == new_puzzle_option){ continue; }
+            puzzle_option = new_puzzle_option;
+
+            current_session = database.createSession(db);
+            session = Session(current_session);
 
             switch(puzzle_option){
                 case 1: { session.setEvent(Event::CUBE_2X2); break; }
@@ -248,6 +255,7 @@ int main(){
                 case 3: { session.setEvent(Event::CUBE_4X4); break; }
                 default: { std::cout << "There is not such a puzzle" << std::endl; continue; }
             }
+            database.saveSession(db, session);
             continue;
         }
        
@@ -270,11 +278,11 @@ int main(){
                   << "|----------------------------------|" << std::endl << std::endl;
 
         while(true){
-            double elapsed = static_cast<double>(inspection.getElapsedTime());
+            double elapsed = static_cast<int>(inspection.getElapsedTime());
 
             if(elapsed >= 15){ std::cout << "\r| " << "+2" << " |" << std::flush; }
             else {
-                std::cout << "\r| " << std::fixed << std::setprecision(0) << elapsed << " |" << std::flush; 
+                std::cout << "\r| " << elapsed << " |" << std::flush; 
             }
 
             if(keyPressed()){
@@ -318,17 +326,14 @@ int main(){
         }
 
         current_solve.setSessionID(current_session);
-        current_solve.setID(loaded_solve);
         current_solve.setScramble(scblr);
         if(static_cast<Penality>(current_solve.getPenalty()) == Penality::DNF){ current_solve.setRawTime(0.0); }
         else { current_solve.setRawTime(timer.getTime()); }
         current_solve.calculateFinalTime();
-        current_solve.calculateDate();
+        current_solve.setDate(session.getDate());
 
+        database.saveSolve(db, current_solve);
         session.addSolve(current_solve);
-        database.saveSolve(current_solve);
-
-        loaded_solve++;
     }
 
     return 0;

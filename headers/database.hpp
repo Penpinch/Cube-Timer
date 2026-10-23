@@ -3,7 +3,7 @@
 
 #include "session.hpp"
 #include "solve.hpp"
-#include <vector>
+#include <sqlite3.h>
 
 class Database {
     private:
@@ -15,15 +15,17 @@ class Database {
         int getCurrentSolvesAmount() const;
         int getMaxId() const;
 
-        void saveSolve(const Solve& solve);
-        std::vector<Solve> loadSolves(int session_to_load);
-
-        void saveSession(const Session& session);
-        Session loadSession();
-        Session loadSession(int session_to_load);
-        int createSession();
-        int initSolve();
-        void loadMaxSolveId();
+        sqlite3 *openDatabase();
+        void closeDatabase(sqlite3 *db);
+        void createTables(sqlite3 *db);
+        void saveSolve(sqlite3 *db, Solve &solve);
+        void saveSession(sqlite3 *db, const Session &session);
+        // void loadMaxSolveId(sqlite3 *db);
+        Session loadSession(sqlite3 *db);
+        Session loadSession(sqlite3 *db, int session_to_load);
+        std::vector<Solve> loadSolves(sqlite3 *db, int session_to_load);
+        int createSession(sqlite3 *db);
+        // int initSolve();
 };
 
 #endif

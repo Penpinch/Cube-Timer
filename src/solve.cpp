@@ -1,13 +1,21 @@
 #include "../headers/solve.hpp"
+#include <iomanip>
 #include <string>
-#include <chrono>
+// #include <chrono>
 #include <iostream>
+#include <ios>
 
-Solve::Solve(){}
+Solve::Solve(){
+    session_id = 0;
+    id = 0;
+    raw_time = 0;
+    final_time = 0;
+    penalty = Penality::NORMAL;
+}
 
-void Solve::setSessionID(int sessionID){ this->sessionID = sessionID; }
+void Solve::setSessionID(int session_id){ this->session_id = session_id; }
 
-void Solve::setID(int ID){ this->ID = ID; }
+void Solve::setID(int id){ this->id = id; }
 
 void Solve::setScramble(std::string scramble){ this->scramble = scramble; }
 
@@ -21,9 +29,9 @@ void Solve::setDate(std::string date){ this->date = date; }
 
 std::string Solve::getScramble() const{ return scramble; }
 
-int Solve::getSessionID() const{ return sessionID; }
+int Solve::getSessionID() const{ return session_id; }
 
-int Solve::getID() const{ return ID; }
+int Solve::getID() const{ return id; }
 
 double Solve::getRawTime() const{ return raw_time; }
 
@@ -32,15 +40,6 @@ double Solve::getFinalTime() const{ return final_time; }
 int Solve::getPenalty() const{ return (int)penalty; }
 
 std::string Solve::getDate() const{ return date; }
-
-void Solve::calculateDate(){
-    auto current = std::chrono::system_clock::now();
-
-    std::time_t time_ = std::chrono::system_clock::to_time_t(current);
-    std::tm* local = std::localtime(&time_);
-    
-    this->date = std::to_string(local->tm_mday) + "/" + std::to_string(local->tm_mon + 1) + "/" + std::to_string(local->tm_year + 1900);
-}
 
 void Solve::calculateFinalTime(){
     if(penalty == Penality::NORMAL){ final_time = raw_time; }
@@ -52,8 +51,17 @@ void Solve::showSolve() const{
     std::cout << "Session ID: " << getSessionID() << std::endl
               << "ID: " << getID() << std::endl
               << "Scramble: " << getScramble() << std::endl;
-    if(getFinalTime() != -1){ std::cout << "Time: " << getFinalTime() << std::endl; }
+
+    if(getFinalTime() != -1){ 
+        std::streamsize original_precision = std::cout.precision();
+
+        std::cout << "Time: " << std::fixed << std::setprecision(2) << getFinalTime() << std::endl; 
+
+        std::cout << std::setprecision(original_precision);
+        std::cout.unsetf(std::ios_base::floatfield);
+    }
     else { std::cout << "Time: " << "DNF" << std::endl; }
+
     std::cout << "Penality: " << getPenalty() << std::endl
               << "Date:" << getDate() << std::endl << std::endl;
 }
