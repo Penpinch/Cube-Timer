@@ -7,8 +7,8 @@ enum class Penality { NORMAL = 0, DNF = 1, PLUSTWO = 2 };
 
 class Solve {
     private:
-        int sessionID;
-        int ID;
+        int session_id;
+        int id;
         std::string scramble;
         double raw_time, final_time;
         Penality penalty;

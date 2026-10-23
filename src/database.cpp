@@ -55,7 +55,7 @@ void Database::createTables(sqlite3 *db){
     }
 }
 
-void Database::saveSolve(sqlite3 *db, const Solve &solve){
+void Database::saveSolve(sqlite3 *db, Solve &solve){
     sqlite3_stmt *stmt;
     const char *sql = "INSERT INTO solves (session_id, scramble, penalty, raw_time, final_time, date) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -65,7 +65,6 @@ void Database::saveSolve(sqlite3 *db, const Solve &solve){
         return;
     }
 
-    // sqlite3_bind_int(stmt, 1, solve.getID()); // cambiar para que lo maneje sql
     sqlite3_bind_int(stmt, 1, solve.getSessionID());
     sqlite3_bind_text(stmt, 2, solve.getScramble().c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 3, solve.getPenalty());
@@ -79,6 +78,8 @@ void Database::saveSolve(sqlite3 *db, const Solve &solve){
         sqlite3_finalize(stmt);
         return;
     }
+
+    solve.setID((int)sqlite3_last_insert_rowid(db));
 
     sqlite3_finalize(stmt);
     std::cout << "Solve saved succesfully." << std::endl;
@@ -109,17 +110,17 @@ void Database::saveSession(sqlite3 *db, const Session &session){
     return;
 }
 
-void Database::loadMaxSolveId(sqlite3 *db){
-    int last_id = 0;
-    sqlite3_stmt *stmt = nullptr;
-    const char *sql = "SELECT MAX(id) FROM solves";
-
-    if(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK){
-        if(sqlite3_step(stmt) == SQLITE_ROW && sqlite3_column_type(stmt, 0) != SQLITE_NULL){ last_id = sqlite3_column_int(stmt, 0); }
-    }
-    max_id = last_id;
-    sqlite3_finalize(stmt);
-}
+// void Database::loadMaxSolveId(sqlite3 *db){
+//     int last_id = 0;
+//     sqlite3_stmt *stmt = nullptr;
+//     const char *sql = "SELECT MAX(id) FROM solves";
+//
+//     if(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK){
+//         if(sqlite3_step(stmt) == SQLITE_ROW && sqlite3_column_type(stmt, 0) != SQLITE_NULL){ last_id = sqlite3_column_int(stmt, 0); }
+//     }
+//     max_id = last_id;
+//     sqlite3_finalize(stmt);
+// }
 
 Session Database::loadSession(sqlite3 *db){
     current_session_id = 0;
@@ -226,4 +227,4 @@ int Database::createSession(sqlite3 *db){
     return current_session_id;
 }
 
-int Database::initSolve(){ return ++max_id; }
+// int Database::initSolve(){ return ++max_id; }
