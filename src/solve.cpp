@@ -1,7 +1,6 @@
 #include "../headers/solve.hpp"
 #include <iomanip>
 #include <string>
-// #include <chrono>
 #include <iostream>
 #include <ios>
 
@@ -48,20 +47,20 @@ void Solve::calculateFinalTime(){
 }
 
 void Solve::showSolve() const{
-    std::cout << "Session ID: " << getSessionID() << std::endl
-              << "ID: " << getID() << std::endl
-              << "Scramble: " << getScramble() << std::endl;
+    std::cout << "Session ID: " << getSessionID() << '\n'
+              << "ID: " << getID() << '\n'
+              << "Scramble: " << getScramble() << '\n';
 
     if(getFinalTime() != -1){ 
         std::streamsize original_precision = std::cout.precision();
 
-        std::cout << "Time: " << std::fixed << std::setprecision(2) << getFinalTime() << std::endl; 
+        std::cout << "Time: " << std::fixed << std::setprecision(2) << getFinalTime() << '\n'; 
 
         std::cout << std::setprecision(original_precision);
         std::cout.unsetf(std::ios_base::floatfield);
     }
-    else { std::cout << "Time: " << "DNF" << std::endl; }
+    else { std::cout << "Time: " << "DNF\n"; }
 
-    std::cout << "Penality: " << getPenalty() << std::endl
-              << "Date:" << getDate() << std::endl << std::endl;
+    std::cout << "Penality: " << getPenalty() << '\n'
+              << "Date:" << getDate() << "\n\n";
 }

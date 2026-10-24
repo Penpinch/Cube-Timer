@@ -17,7 +17,7 @@ int Database::getMaxId() const{ return max_id; }
 sqlite3 *Database::openDatabase(){
     sqlite3 *db = nullptr;
     if(sqlite3_open("cube_timer.db", &db) != SQLITE_OK){
-        std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error: " << sqlite3_errmsg(db) << '\n';
 
         if(db != nullptr){ sqlite3_close(db); }
         return nullptr;
@@ -50,7 +50,7 @@ void Database::createTables(sqlite3 *db){
 
     char *error = nullptr;
     if(sqlite3_exec(db, sql, nullptr, nullptr, &error) != SQLITE_OK){
-        std::cerr << "Error SQL(in createTables): " << error << std::endl;
+        std::cerr << "Error SQL: " << error << '\n';
         sqlite3_free(error);
     }
 }
@@ -61,7 +61,7 @@ void Database::saveSolve(sqlite3 *db, Solve &solve){
 
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if(rc != SQLITE_OK){
-        std::cerr << "Error while preparing the consult(in saveSolve): " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error while preparing the consult: " << sqlite3_errmsg(db) << '\n';
         return;
     }
 
@@ -74,7 +74,7 @@ void Database::saveSolve(sqlite3 *db, Solve &solve){
 
     rc = sqlite3_step(stmt);
     if(rc != SQLITE_DONE){
-        std::cerr << "Error while inserting the solve(in saveSolve): " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error while inserting the solve: " << sqlite3_errmsg(db) << '\n';
         sqlite3_finalize(stmt);
         return;
     }
@@ -82,7 +82,7 @@ void Database::saveSolve(sqlite3 *db, Solve &solve){
     solve.setID((int)sqlite3_last_insert_rowid(db));
 
     sqlite3_finalize(stmt);
-    std::cout << "Solve saved succesfully." << std::endl;
+    std::cout << "Solve saved succesfully.\n";
     return;
 }
 
@@ -92,7 +92,7 @@ void Database::saveSession(sqlite3 *db, const Session &session){
 
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if(rc != SQLITE_OK){
-        std::cerr << "Error while preparing the consult(in saveSession): " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error while preparing the consult: " << sqlite3_errmsg(db) << '\n';
         return;
     }
     sqlite3_bind_int(stmt, 1, session.getSessionID());
@@ -101,30 +101,24 @@ void Database::saveSession(sqlite3 *db, const Session &session){
 
     rc = sqlite3_step(stmt);
     if(rc != SQLITE_DONE){
-        std::cerr << "Error while inserting the session(in saveSession): " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error while inserting the session: " << sqlite3_errmsg(db) << '\n';
         sqlite3_finalize(stmt);
         return;
     }
 
     sqlite3_finalize(stmt);
-    std::cout << "Session saved succesfully." << std::endl;
+    std::cout << "Session saved succesfully.\n";
     return;
 }
 
 Session Database::loadSession(sqlite3 *db){
     current_session_id = 0;
-    current_solve_amount = 0;
-    const char *sql = R"(
-        SELECT id, event, date (SELECT COUNT(*) FROM solves WHERE session_id = sessions.id)
-        FROM sessions 
-        ORDER BY id DESC 
-        LIMIT 1;
-    )";
+    const char *sql = R"( SELECT id, event, date FROM sessions ORDER BY id DESC LIMIT 1; )";
 
     sqlite3_stmt *stmt = nullptr;
 
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK){
-        std::cerr << "Error SQL(in loadSession: " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error SQL: " << sqlite3_errmsg(db) << '\n';
         return Session();
     }
 
@@ -149,7 +143,7 @@ Session Database::loadSession(sqlite3 *db, int session_to_load){
     sqlite3_stmt *stmt = nullptr;
 
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK){
-        std::cerr << "Error SQL(in loadSession(id)): " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error SQL: " << sqlite3_errmsg(db) << '\n';
         return Session();
     }
 
@@ -175,7 +169,7 @@ std::vector<Solve> Database::loadSolves(sqlite3 *db, int session_to_load){
     sqlite3_stmt *stmt = nullptr;
 
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK){
-        std::cerr << "Error SQL(in loadSolves): " << sqlite3_errmsg(db) << std::endl;
+        std::cerr << "Error SQL: " << sqlite3_errmsg(db) << '\n';
         return v;
     }
 
@@ -201,7 +195,7 @@ std::vector<Solve> Database::loadSolves(sqlite3 *db, int session_to_load){
 
         v.push_back(s);
     }
-    if(rc != SQLITE_DONE){ std::cerr << "Error while loading solves(in loadSolves): " << sqlite3_errmsg(db) << std::endl; }
+    if(rc != SQLITE_DONE){ std::cerr << "Error while loading solves: " << sqlite3_errmsg(db) << '\n'; }
 
     sqlite3_finalize(stmt);
     return v;
